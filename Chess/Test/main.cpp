@@ -118,7 +118,8 @@ COMMANDS playGame(bool versusComputer = false) {
 	RenderWindow window(VideoMode(width + 400, height), "Chess", sf::Style::Close);
 	Texture _board, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, whitesTurn, blacksTurn,
 		menu, playAgain, quit, prompt;
-
+	
+	//   load textures
 	_board.loadFromFile("images/Board.png");
 	whitesTurn.loadFromFile("images/WHITES_TURN.png");
 	blacksTurn.loadFromFile("images/BLACKS_TURN.png");
@@ -128,7 +129,7 @@ COMMANDS playGame(bool versusComputer = false) {
 	prompt.loadFromFile("images/prompt.png");
 
 	t1.loadFromFile("images/KingWhite.png");
-	t2.loadFromFile("images/QueenWhite.png");
+	t2.loadFromFile("images/QueenWhite.png");			
 	t3.loadFromFile("images/BishopWhite.png");
 	t4.loadFromFile("images/KnightWhite.png");
 	t5.loadFromFile("images/RookWhite.png");
@@ -157,6 +158,8 @@ COMMANDS playGame(bool versusComputer = false) {
 	t10.setSmooth(true);
 	t11.setSmooth(true);
 	t12.setSmooth(true);
+
+	// create sprites
 
 	Sprite sBoard(_board);
 	sBoard.setScale(
@@ -223,6 +226,8 @@ COMMANDS playGame(bool versusComputer = false) {
 	changeSpriteScale(PawnBlack);
 
 
+	// make map of all figures
+
 	for (int i = 0; i < 8; i++) {
 		Pawn WhitePawn(i, 6, FIGURES::PAWN, 1, PawnWhite);
 		figures[(i * 10 + 6)] = std::make_shared<Pawn>(WhitePawn);
@@ -247,8 +252,6 @@ COMMANDS playGame(bool versusComputer = false) {
 	figures[37] = std::make_shared<Queen>(WhiteQueen);
 	King WhiteKing(4, 7, FIGURES::KING, 1, KingWhite);
 	figures[47] = std::make_shared<King>(WhiteKing);
-
-	//WhiteKing.outBoard();
 
 	for (int i = 0; i < 8; i++) {
 		Pawn BlackPawn(i, 1, FIGURES::PAWN, -1, PawnBlack);
@@ -277,19 +280,6 @@ COMMANDS playGame(bool versusComputer = false) {
 
 
 
-	/*for (int i = 0; i < 8; i++) {
-		for (int j = 0; j < 8; j++) {
-			std::cout << board[i][j] << ' ';
-		}
-		std::cout << '\n';
-	}*/
-
-	/*for (auto it : figures) {
-		std::cout << it.second.x << ' ' << it.second.y << ' '
-			<< it.second.name << ' ' << it.second.sprite.getPosition().x <<
-			' ' << it.second.sprite.getPosition().y << '\n';
-	}*/
-
 	bool isMove = false, correctClick = false, victoryAchived = false, showTurn = 1,
 		showPrompts = false;
 	float dx = 0, dy = 0;
@@ -299,15 +289,21 @@ COMMANDS playGame(bool versusComputer = false) {
 	int team = 1, winTeam = 0;
 	COMMANDS nextCommand = COMMANDS::QUIT;
 	std::vector <PointInt> prompts;
-	std::string position = "", prevS = "";
+	std::string position = "";
 
-	int a = 0;
+
 	while (window.isOpen())
 	{
 
+		// AI move
 		if (versusComputer && team == -1 && !victoryAchived) {
 			
-			Vector2i kingPos;
+
+			// find enemy king position to find out
+			// if there is checkmate
+
+			//find king position
+			Vector2i kingPos; 
 			for (auto i : figures) {
 				if (i.second->getFigureType() == FIGURES::KING
 					&& i.second->getTeam() == 1) {
@@ -316,6 +312,7 @@ COMMANDS playGame(bool versusComputer = false) {
 				}
 			}
 
+			//find out if there is a checkmate
 			for (auto i : figures) {
 				if (i.second->getTeam() == -1) {
 					i.second->findAvaliableCells();
@@ -331,32 +328,30 @@ COMMANDS playGame(bool versusComputer = false) {
 				if (victoryAchived) break;
 			}
 
+			//if there was not checkmate, make AI move
+
 			if (!victoryAchived) {
-				std::string s = getNextMove(position);
+				std::string s = getNextMove(position); //get AI move
 				oldPos2 = toCoord(s[0], s[1]);
 				newPos2 = toCoord(s[2], s[3]);
 
-				int pos2 = newPos2.x * 10 + newPos2.y;
+				
+				int pos2 = newPos2.x * 10 + newPos2.y; // compute new key for figure
+
 				updateFigurs(oldPos2.x, oldPos2.y, newPos2.x, newPos2.y);
-				auto choosenFigure = figures.lower_bound(pos2);
-				position += (s + ' ');
-				//std::cout << "Position: " << position << '\n';
-				//std::cout << " YEEEEEEEEES " << newPos2.x << ' ' << newPos2.y << '\n';
+				auto chosenFigure = figures.lower_bound(pos2);
+				position += (s + ' '); 
 
-				choosenFigure->second->updateBoard(newPos2.x, newPos2.y);
+				chosenFigure->second->updateBoard(newPos2.x, newPos2.y);
 
-				choosenFigure->second->setPos();
+				chosenFigure->second->setPos();
 
 				team = 1;
-				prevS = s;
 			}
 		}
 
 		Vector2i pos = Mouse::getPosition(window) - Vector2i(offset);
-		if (a == 1000) {
-			//std::cout << pos.x << ' ' << pos.y << '\n';
-			a = 0;
-		} a++;
+
 
 		sf::Event event;
 		while (window.pollEvent(event))
@@ -367,7 +362,7 @@ COMMANDS playGame(bool versusComputer = false) {
 			if (event.type == Event::MouseButtonPressed)
 				if (event.key.code == Mouse::Left) {
 					auto it = figures.begin();
-					for (int i = 0; i < figures.size(); i++) {
+					for (int i = 0; i < figures.size(); i++) { // find out what figure choose player
 						if (it->second->getSprite().getGlobalBounds().contains(pos.x, pos.y))
 						{
 							std::cout << "left and top: " << it->second->getSprite().getGlobalBounds().left
@@ -376,6 +371,8 @@ COMMANDS playGame(bool versusComputer = false) {
 								<< it->second->getSprite().getPosition().x <<
 								' ' << it->second->getSprite().getPosition().y << '\n';
 
+							// check if the chosen figure`s team equal equal to team,
+							//which must make a move
 							if (team == it->second->getTeam()) {
 								isMove = true; n = it;
 								oldPos2.x = n->second->getX();
@@ -388,13 +385,15 @@ COMMANDS playGame(bool versusComputer = false) {
 						}
 						it++;
 					}
-
+					
+					// quit
 					if (sQuit.getGlobalBounds().contains(pos.x, pos.y)) {
 						window.close();
 						nextCommand = COMMANDS::QUIT;
 						return nextCommand;
 					}
 
+					//this botton will appear after checkmate
 					if (sPlayAgain.getGlobalBounds().contains(pos.x, pos.y) && victoryAchived) {
 						window.close();
 						nextCommand = (versusComputer) ? COMMANDS::PLAY_AGAIN_COMPUTER 
@@ -403,6 +402,7 @@ COMMANDS playGame(bool versusComputer = false) {
 						return nextCommand;
 					}
 
+					//back to menu
 					if (sMenu.getGlobalBounds().contains(pos.x, pos.y)) {
 						window.close();
 						nextCommand = COMMANDS::MENU;
@@ -416,12 +416,13 @@ COMMANDS playGame(bool versusComputer = false) {
 				if (event.key.code == Mouse::Left) {
 					if ((correctClick) && !victoryAchived) {
 						PointInt p = findIntPoint(pos);
-						n->second->findAvaliableCells();
+						n->second->findAvaliableCells(); //find all cells, that are reachable from
+														 //chosen figure position
 						bool f = false;
 						for (auto j : n->second->getAvaliableCells()) {
 							if (j.x == p.x && j.y == p.y) {
-								f = true;
-								//std::cout << "YEEEEEEEEEEEEEEEEEEES\n";
+								f = true; // if position whith choose player is in vector of 
+										  // reacheble cells
 								break;
 
 							}
@@ -429,9 +430,10 @@ COMMANDS playGame(bool versusComputer = false) {
 
 						if (f)
 						{
-							if (n->second->getTeam() == 1) team = -1;
-							else team = 1;
+							if (n->second->getTeam() == 1) team = -1; // change turn to make move
+							else team = 1; 
 							int pos = p.x * 10 + p.y;
+							//if one of players(not AI) made checkmate
 							if (figures[pos] != nullptr &&
 								figures[pos]->getFigureType() == FIGURES::KING) {
 								victoryAchived = true; 
@@ -448,17 +450,18 @@ COMMANDS playGame(bool versusComputer = false) {
 								n->second->updateHasMoved(true);
 							}
 
-							showPrompts = false;
-							//n->second->outBoard();
+							showPrompts = false; // the move is correct, dont need to show prompts
 							
+							//add move to comutation string for AI
 							if (versusComputer)
 								position += (toChessNote(oldPos2.x, oldPos2.y)
 								+ toChessNote(n->second->getX(), n->second->getY()) + ' ');
 						}
 						else
 						{
-							n->second->updateSprite(oldPos.x, oldPos.y);
-							prompts = n->second->getAvaliableCells();
+							n->second->updateSprite(oldPos.x, oldPos.y); // moves sprite to it old
+																		 // position
+							prompts = n->second->getAvaliableCells();    // find prompts
 							showPrompts = true;
 						}
 						isMove = false;
@@ -466,6 +469,7 @@ COMMANDS playGame(bool versusComputer = false) {
 					}
 				}
 
+			//moves sprite
 			if (isMove && !victoryAchived) n->second->updateSprite(pos.x - dx, pos.y - dy);
 
 		}
@@ -475,6 +479,7 @@ COMMANDS playGame(bool versusComputer = false) {
 		window.clear(color);
 		window.draw(sBoard);
 
+		//if the player made mistake, shows prompts
 		if (showPrompts && !prompts.empty()) {
 			for (auto j : prompts) {
 				Sprite sPrompt(prompt);
@@ -484,6 +489,7 @@ COMMANDS playGame(bool versusComputer = false) {
 		}
 
 
+		//shows turn
 		if (showTurn) {
 			if (team == 1)
 				window.draw(sWhitesTurn);
@@ -491,12 +497,14 @@ COMMANDS playGame(bool versusComputer = false) {
 				window.draw(sBlacksTurn);
 		}
 
+		//shows figurs on the board
 		auto it = figures.begin();
 		for (int i = 0; i < figures.size(); i++) {
 			window.draw(it->second->getSprite());
 			it++;
 		}
 
+		//shows who won and shows victory menu
 		if (victoryAchived) {
 			Texture victoryT;
 			if (winTeam == 1)
@@ -521,13 +529,6 @@ COMMANDS playGame(bool versusComputer = false) {
 		
 		window.draw(sQuit);
 		window.draw(sMenu);
-		//window.draw(WhiteKing.sprite);
-		//std::cout << "start\n";
-		//WhiteKing.findAvaliableCells();
-		//std::cout << "fin\n";
-		//window.draw(WhiteQueen.sprite);
-		//Queen.findAvaliableCells();
-		//return 0;
 		window.display();
 	}
 	CloseConnection();
@@ -584,6 +585,7 @@ COMMANDS startMenu() {
 			
 		} a++;*/
 
+
 		while (window.pollEvent(event))
 		{
 			if (event.type == Event::Closed)
@@ -591,6 +593,8 @@ COMMANDS startMenu() {
 
 			
 				if (event.type == Event::MouseButtonPressed) {
+					
+					//quit
 					if (event.key.code == Mouse::Left) {
 						if (sQuit.getGlobalBounds().contains(pos.x, pos.y)) {
 							window.close();
@@ -598,21 +602,29 @@ COMMANDS startMenu() {
 							return nextCommand;
 						}
 
+						//play versus player
 						if (sVsPlayer.getGlobalBounds().contains(pos.x, pos.y)) {
 							window.close();
 							nextCommand = COMMANDS::VS_PLAYER;
 							return nextCommand;
 						}
 
+						//play versus AI
 						if (sVsComputer.getGlobalBounds().contains(pos.x, pos.y)) {
 							window.close();
 							nextCommand = COMMANDS::VS_COMPUTER;
 							return nextCommand;
 						}
+
+						if (event.type == Event::Closed) {
+							window.close();
+							nextCommand = COMMANDS::QUIT;
+							return nextCommand;
+						}
 					}
 				}
 
-				//if (event.type == Event::Closed)
+				
 		}
 		window.clear();
 		window.draw(sBackGround);
@@ -630,9 +642,11 @@ COMMANDS startMenu() {
 
 int main()
 {
+	//starts menu
 	COMMANDS nextCommand;
 	nextCommand = startMenu();
 
+	//program
 	while (nextCommand != COMMANDS::QUIT) {
 		if (nextCommand == COMMANDS::VS_PLAYER)
 			nextCommand = playGame();

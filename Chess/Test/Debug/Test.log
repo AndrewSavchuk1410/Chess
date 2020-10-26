@@ -1,12 +1,18 @@
 ﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v150\Microsoft.CppBuild.targets(391,5): warning MSB8028: промежуточный каталог (Debug\) содержит файлы, которые используются совместно с другим проектом (Test.vcxproj).  Это может привести к ошибкам очистки и перестроения.
   Bishop.cpp
+  Figure.cpp
+  King.cpp
+  Knight.cpp
+  Pawn.cpp
+  Queen.cpp
+  Rook.cpp
   main.cpp
 c:\test work\chess\test\main.cpp(112): warning C4018: <: несоответствие типов со знаком и без знака
 c:\test work\chess\test\main.cpp(113): warning C4018: <: несоответствие типов со знаком и без знака
 c:\test work\chess\test\main.cpp(118): warning C4244: аргумент: преобразование "const float" в "unsigned int", возможна потеря данных
 c:\test work\chess\test\main.cpp(118): warning C4244: аргумент: преобразование "float" в "unsigned int", возможна потеря данных
-c:\test work\chess\test\main.cpp(370): warning C4018: <: несоответствие типов со знаком и без знака
-c:\test work\chess\test\main.cpp(371): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+c:\test work\chess\test\main.cpp(365): warning C4018: <: несоответствие типов со знаком и без знака
+c:\test work\chess\test\main.cpp(366): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
           with
           [
               T=int
@@ -15,7 +21,7 @@ c:\test work\chess\test\main.cpp(371): warning C4244: аргумент: прео
           [
               T=float
           ]
-c:\test work\chess\test\main.cpp(392): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+c:\test work\chess\test\main.cpp(390): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
           with
           [
               T=int
@@ -24,7 +30,7 @@ c:\test work\chess\test\main.cpp(392): warning C4244: аргумент: прео
           [
               T=float
           ]
-c:\test work\chess\test\main.cpp(398): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+c:\test work\chess\test\main.cpp(397): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
           with
           [
               T=int
@@ -42,8 +48,8 @@ c:\test work\chess\test\main.cpp(406): warning C4244: аргумент: прео
           [
               T=float
           ]
-c:\test work\chess\test\main.cpp(495): warning C4018: <: несоответствие типов со знаком и без знака
-c:\test work\chess\test\main.cpp(595): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+c:\test work\chess\test\main.cpp(502): warning C4018: <: несоответствие типов со знаком и без знака
+c:\test work\chess\test\main.cpp(599): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
           with
           [
               T=int
@@ -52,7 +58,7 @@ c:\test work\chess\test\main.cpp(595): warning C4244: аргумент: прео
           [
               T=float
           ]
-c:\test work\chess\test\main.cpp(601): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+c:\test work\chess\test\main.cpp(606): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
           with
           [
               T=int
@@ -61,7 +67,7 @@ c:\test work\chess\test\main.cpp(601): warning C4244: аргумент: прео
           [
               T=float
           ]
-c:\test work\chess\test\main.cpp(607): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+c:\test work\chess\test\main.cpp(613): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
           with
           [
               T=int
@@ -70,8 +76,5 @@ c:\test work\chess\test\main.cpp(607): warning C4244: аргумент: прео
           [
               T=float
           ]
-c:\program files (x86)\microsoft visual studio\2019\community\vc\tools\msvc\14.16.27023\include\memory(1428): error C2440: <function-style-cast>: невозможно преобразовать "std::shared_ptr<Bishop>" в "std::shared_ptr<Figure>"
-  c:\program files (x86)\microsoft visual studio\2019\community\vc\tools\msvc\14.16.27023\include\memory(1428): note: Ни один конструктор не смог принять исходный тип, либо разрешение перегрузки конструктора неоднозначно
-  c:\test work\chess\test\main.cpp(242): note: выполняется компиляция ссылки на экземпляр шаблон функции "std::shared_ptr<Figure> &std::shared_ptr<Figure>::operator =<Bishop>(std::shared_ptr<Bishop> &&) noexcept"
-  c:\test work\chess\test\main.cpp(242): note: выполняется компиляция ссылки на экземпляр шаблон функции "std::shared_ptr<Figure> &std::shared_ptr<Figure>::operator =<Bishop>(std::shared_ptr<Bishop> &&) noexcept"
   Создание кода...
+  Test.vcxproj -> C:\Test work\Chess\Test\Debug\Chess.exe

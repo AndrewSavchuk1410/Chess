@@ -40,27 +40,38 @@ public:
 		
 	}
 
-	static std::shared_ptr<Figure> create() {
-		struct make_shared_enabler : Figure {};
-		return std::make_shared<make_shared_enabler>();
-	}
 
 
 	int getX();
 	void setX(int _x);
+
 	int getY();
 	void setY(int _y);
+
 	int getTeam();
+
 	FIGURES getFigureType();
+
 	sf::Sprite getSprite();
+
 	void updateSprite(float _x, float _y);
+
 	std::vector <PointInt> getAvaliableCells();
+
 	bool ifHasMoved();
+
 	void updateHasMoved(bool f);
 
-	void horizontalSearh(int steps);
-	void verticalSearh(int steps);
-	void diagonalSearh(int steps);
+
+	void horizontalSearh(int steps); //   finds all cells that lie horizontally and are
+									 //   reachable from position of chosen figure
+
+	void verticalSearh(int steps);   //   finds all cells that lie vertically and are
+									 //   reachable from position of chosen figure
+
+	void diagonalSearh(int steps);   //   finds all cells that lie diagonally and are
+									 //   reachable from position of chosen figure
+
 
 	void setPos();
 	void updateBoard(int x, int y);
