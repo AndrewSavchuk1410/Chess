@@ -40,7 +40,6 @@ enum class FIGURES {
 	QUEEN = 4,
 	KING = 5,
 	PAWN = 6
-
 };
 	
 enum class COMMANDS {
@@ -332,20 +331,51 @@ COMMANDS playGame(bool versusComputer = false) {
 
 			if (!victoryAchived) {
 				std::string s = getNextMove(position); //get AI move
+				//std::string s = "e8c8";
 				oldPos2 = toCoord(s[0], s[1]);
 				newPos2 = toCoord(s[2], s[3]);
 
-				
-				int pos2 = newPos2.x * 10 + newPos2.y; // compute new key for figure
+				if (oldPos2.x == 4 && oldPos2.y == 0 && newPos2.x == 6 && newPos2.y == 0) {
+					int KingNewPos = (newPos2.x) * 10 + newPos2.y;
+					int RookNewPos = (newPos2.x - 1) * 10 + newPos2.y;
+					
+					updateFigurs(oldPos2.x, oldPos2.y, newPos2.x, newPos2.y);
+					updateFigurs(7, 0, newPos2.x - 1, newPos2.y);
 
-				updateFigurs(oldPos2.x, oldPos2.y, newPos2.x, newPos2.y);
-				auto chosenFigure = figures.lower_bound(pos2);
+					auto chosenKing = figures.lower_bound(KingNewPos);
+					auto chosenRook = figures.lower_bound(RookNewPos);
+
+					chosenKing->second->updateBoard(newPos2.x, newPos2.y);
+					chosenKing->second->setPos();
+					chosenRook->second->updateBoard(newPos2.x - 1, newPos2.y);
+					chosenRook->second->setPos();
+				}
+				else if (oldPos2.x == 4 && oldPos2.y == 0 && newPos2.x == 2 && newPos2.y == 0) {
+					int KingNewPos = (newPos2.x) * 10 + newPos2.y;
+					int RookNewPos = (newPos2.x + 1) * 10 + newPos2.y;
+
+					updateFigurs(oldPos2.x, oldPos2.y, newPos2.x, newPos2.y);
+					updateFigurs(0, 0, newPos2.x + 1, newPos2.y);
+
+					auto chosenKing = figures.lower_bound(KingNewPos);
+					auto chosenRook = figures.lower_bound(RookNewPos);
+
+					chosenKing->second->updateBoard(newPos2.x, newPos2.y);
+					chosenKing->second->setPos();
+					chosenRook->second->updateBoard(newPos2.x + 1, newPos2.y);
+					chosenRook->second->setPos();
+				}
+				else {
+					int pos2 = newPos2.x * 10 + newPos2.y; // compute new key for figure
+
+					updateFigurs(oldPos2.x, oldPos2.y, newPos2.x, newPos2.y);
+					auto chosenFigure = figures.lower_bound(pos2);
+
+					chosenFigure->second->updateBoard(newPos2.x, newPos2.y);
+					chosenFigure->second->setPos();
+				}
 				position += (s + ' '); 
-
-				chosenFigure->second->updateBoard(newPos2.x, newPos2.y);
-
-				chosenFigure->second->setPos();
-
+				std::cout << position << '\n';
 				team = 1;
 			}
 		}
@@ -430,26 +460,107 @@ COMMANDS playGame(bool versusComputer = false) {
 
 						if (f)
 						{
-							if (n->second->getTeam() == 1) team = -1; // change turn to make move
-							else team = 1; 
-							int pos = p.x * 10 + p.y;
-							//if one of players(not AI) made checkmate
-							if (figures[pos] != nullptr &&
-								figures[pos]->getFigureType() == FIGURES::KING) {
-								victoryAchived = true; 
-								showTurn = false;
-								winTeam = n->second->getTeam();
-							}
-							updateFigurs(n->second->getX(), n->second->getY(), p.x, p.y);
+							if (n->second->getFigureType() == FIGURES::KING && std::abs(oldPos2.x - p.x) > 1) {
+								if (team == 1) {
+									if (p.x == 6) {
+										int KingNewPos = (p.x) * 10 + p.y;
+										int RookNewPos = (p.x - 1) * 10 + p.y;
 
-							n = figures.lower_bound(pos);
-							n->second->updateBoard(p.x, p.y);
-							
-							n->second->setPos();
-							if (n->second->getFigureType() == FIGURES::PAWN && !n->second->ifHasMoved()) {
+										updateFigurs(oldPos2.x, oldPos2.y, p.x, p.y);
+										updateFigurs(7, 7, p.x - 1, p.y);
+										std::cout << "YES";
+										auto chosenKing = figures.lower_bound(KingNewPos);
+										auto chosenRook = figures.lower_bound(RookNewPos);
+										chosenKing->second->updateHasMoved(true);
+										chosenRook->second->updateHasMoved(true);
+
+										chosenKing->second->updateBoard(p.x, p.y);
+										chosenKing->second->setPos();
+										chosenRook->second->updateBoard(p.x - 1, p.y);
+										chosenRook->second->setPos();
+										n = figures.lower_bound(KingNewPos);
+									}
+									else if (p.x == 2) {
+										int KingNewPos = (p.x) * 10 + p.y;
+										int RookNewPos = (p.x + 1) * 10 + p.y;
+
+										updateFigurs(oldPos2.x, oldPos2.y, p.x, p.y);
+										updateFigurs(0, 7, p.x + 1, p.y);
+										std::cout << "YES2";
+										auto chosenKing = figures.lower_bound(KingNewPos);
+										auto chosenRook = figures.lower_bound(RookNewPos);
+										chosenKing->second->updateHasMoved(true);
+										chosenRook->second->updateHasMoved(true);
+
+										chosenKing->second->updateBoard(p.x, p.y);
+										chosenKing->second->setPos();
+										chosenRook->second->updateBoard(p.x + 1, p.y);
+										chosenRook->second->setPos();
+										n = figures.lower_bound(KingNewPos);
+									}
+								}
+								else if (team == -1) {
+									if (p.x == 6) {
+										int KingNewPos = (p.x) * 10 + p.y;
+										int RookNewPos = (p.x - 1) * 10 + p.y;
+
+										updateFigurs(oldPos2.x, oldPos2.y, p.x, p.y);
+										updateFigurs(7, 0, p.x - 1, p.y);
+										std::cout << "YES";
+										auto chosenKing = figures.lower_bound(KingNewPos);
+										auto chosenRook = figures.lower_bound(RookNewPos);
+										chosenKing->second->updateHasMoved(true);
+										chosenRook->second->updateHasMoved(true);
+
+										chosenKing->second->updateBoard(p.x, p.y);
+										chosenKing->second->setPos();
+										chosenRook->second->updateBoard(p.x - 1, p.y);
+										chosenRook->second->setPos();
+										n = figures.lower_bound(KingNewPos);
+									}
+									else if (p.x == 2) {
+										int KingNewPos = (p.x) * 10 + p.y;
+										int RookNewPos = (p.x + 1) * 10 + p.y;
+
+										updateFigurs(oldPos2.x, oldPos2.y, p.x, p.y);
+										updateFigurs(0, 0, p.x + 1, p.y);
+										std::cout << "YES2";
+										auto chosenKing = figures.lower_bound(KingNewPos);
+										auto chosenRook = figures.lower_bound(RookNewPos);
+										chosenKing->second->updateHasMoved(true);
+										chosenRook->second->updateHasMoved(true);
+
+										chosenKing->second->updateBoard(p.x, p.y);
+										chosenKing->second->setPos();
+										chosenRook->second->updateBoard(p.x + 1, p.y);
+										chosenRook->second->setPos();
+										n = figures.lower_bound(KingNewPos);
+									}
+								}
+							}
+							else {
+								int pos = p.x * 10 + p.y;
+								//if one of players(not AI) made checkmate
+								if (figures[pos] != nullptr &&
+									figures[pos]->getFigureType() == FIGURES::KING) {
+									victoryAchived = true;
+									showTurn = false;
+									winTeam = n->second->getTeam();
+								}
+								updateFigurs(n->second->getX(), n->second->getY(), p.x, p.y);
+
+								n = figures.lower_bound(pos);
+								n->second->updateBoard(p.x, p.y);
 								n->second->updateHasMoved(true);
+
+								n->second->setPos();
+								if (n->second->getFigureType() == FIGURES::PAWN && !n->second->ifHasMoved()) {
+									n->second->updateHasMoved(true);
+								}
 							}
 
+							if (n->second->getTeam() == 1) team = -1; // change turn to make move
+							else team = 1;
 							showPrompts = false; // the move is correct, dont need to show prompts
 							
 							//add move to comutation string for AI

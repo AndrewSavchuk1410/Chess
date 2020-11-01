@@ -4,15 +4,25 @@
 
 
 int Figure::getX() { return x; }
+
 void Figure::setX(int _x) { x = _x; }
+
 int Figure::getY() { return y; }
+
 void Figure::setY(int _y) { y = _y; }
+
 int Figure::getTeam() { return team; }
+
 FIGURES Figure::getFigureType() { return figureType; }
+
 sf::Sprite Figure::getSprite() { return sprite; }
+
 void Figure::updateSprite(float _x, float _y) { sprite.setPosition(_x, _y); }
+
 std::vector <PointInt> Figure::getAvaliableCells() { return avaliableCells; }
+
 bool Figure::ifHasMoved() { return hasMoved; }
+
 void Figure::updateHasMoved(bool f) { hasMoved = f; }
 
 void Figure::horizontalSearh(int steps) {
@@ -160,7 +170,7 @@ void Figure::setPos() {
 }
 
 void Figure::updateBoard(int _x, int _y) {
-	//outBoard();
+	outBoard();
 	int k = board[x][y];
 	board[x][y] = 0;
 	board[_x][_y] =k;

@@ -1,7 +1,7 @@
 #pragma once
 #include "Figure.h"
 #include <SFML/Graphics.hpp>
-#include "Board.h"
+//#include "Board.h"
 
 class King : public Figure
 {
