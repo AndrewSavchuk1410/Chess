@@ -51,7 +51,18 @@ enum class COMMANDS {
 	MENU
 };
 
+enum class STATE {
+	CHECK,
+	CHECKMATE,
+	OK
+};
+
 using namespace sf;
+
+bool operator==(const PointInt& p1, const PointInt& p2) {
+	if (p1.x == p2.x && p1.y == p2.y) return true;
+	else return false;
+}
 
 const float width = 840, height = 840;
 Vector2f targetSize(width, height);
@@ -100,6 +111,137 @@ Vector2i toCoord(char a, char b)
 	y = convertedY[y];
 	return Vector2i(x, y);
 }
+
+std::vector<PointInt> getAllMoves(int team) { //finds all moves that enemy team can make
+	std::vector<PointInt> allMoves;
+
+	for (auto i : figures) {
+		if (i.second->getTeam() != team) {
+			i.second->findAvaliableCells();
+			for (auto j : i.second->getAvaliableCells()) {
+				allMoves.push_back(j);
+			}
+		}
+	}
+	return allMoves;
+}
+
+std::vector<PointInt> getAllMovesWithNoKing(int team) { //finds all moves that enemy team can make, if there is enemy king on the board
+	int x, y;
+
+	for (auto it : figures) {
+		if (it.second->getFigureType() == FIGURES::KING && it.second->getTeam() == team) {
+			x = it.second->getX();
+			y = it.second->getY();
+			break;
+		}
+	}
+
+	int pos = x * 10 + y;
+	auto king = figures[pos];
+	int posValue = board[x][y];
+	board[x][y] = 0;
+	figures.erase(pos);
+
+	std::vector<PointInt> allMoves = getAllMoves(team);
+
+	figures[pos] = (king);
+	board[x][y] = posValue;
+	
+	return allMoves;
+}
+
+STATE checkOrCheckmate(int team) {
+	int x, y;
+	
+	for (auto it : figures) {
+		if (it.second->getFigureType() == FIGURES::KING && it.second->getTeam() == team) {
+			x = it.second->getX();
+			y = it.second->getY();
+			break;
+		}
+	}
+
+	int pos = x * 10 + y;
+	auto king = figures[pos];
+	king->findAvaliableCells();
+	auto kingMoves = king->getAvaliableCells();
+	
+	for (auto J : figures)
+		std::cout << J.first << ' ';
+	std::cout << '\n';
+
+	std::vector<PointInt> allMoves = getAllMovesWithNoKing(team);
+
+	for (auto J : figures)
+		std::cout << J.first << ' ';
+	std::cout << std::endl;
+
+	PointInt p = { king->getX(), king->getY() };
+
+	if (std::find(allMoves.begin(), allMoves.end(), p) == allMoves.end()) {
+		return STATE::OK;
+	}
+
+	bool check1 = false;
+	for (auto j : kingMoves) {
+		if (std::find(allMoves.begin(), allMoves.end(), j) == allMoves.end()) {
+			check1 = true;
+		}
+	}
+
+	if (check1) return STATE::CHECK;
+
+	PointInt kingPos = { x, y }; // king`s x and y
+	for (auto it : figures) {
+		if (it.second->getTeam() == team) {
+			it.second->findAvaliableCells();
+			
+			for (auto i : it.second->getAvaliableCells()) {
+				bool check2 = false;
+				int posValue = board[i.x][i.y];
+				int oldX = it.second->getX();
+				int oldY = it.second->getY();
+				int oldPos = oldX * 10 + oldY;
+				int newPos = i.x * 10 + i.y;
+
+				/*std::shared_ptr<Figure> someFigure = nullptr; //save the figure that we are going delete temporarily
+				if (figures[newPos] != nullptr) {
+					someFigure = figures[newPos];
+				}*/
+
+				std::map<const int, std::shared_ptr<Figure>>::iterator n;
+				
+				/*n = figures.lower_bound(oldPos);
+				updateFigurs(n->second->getX(), n->second->getY(), i.x, i.y);
+				n = figures.lower_bound(newPos);
+				n->second->updateBoard(i.x, i.y);*/
+
+
+				allMoves = getAllMoves(team);
+				
+				if (std::find(allMoves.begin(), allMoves.end(), kingPos) == allMoves.end())
+					check2 = true;
+
+				/*updateFigurs(n->second->getX(), n->second->getY(), oldX, oldY);
+				n = figures.lower_bound(oldPos);
+				n->second->updateBoard(oldX, oldY);
+
+				if (someFigure != nullptr)
+					figures[newPos] = someFigure;
+
+				board[i.x][i.y] = posValue;
+				//std::cout << it.first << '\n';*/
+				if (check2) return STATE::CHECK;
+			}
+		}
+	}
+	if (!check1)
+		return STATE::CHECKMATE;
+	else
+		return STATE::CHECK;
+}
+
 
 COMMANDS playGame(bool versusComputer = false) {
 	
@@ -227,10 +369,10 @@ COMMANDS playGame(bool versusComputer = false) {
 
 	// make map of all figures
 
-	for (int i = 0; i < 8; i++) {
+	/*for (int i = 0; i < 8; i++) {
 		Pawn WhitePawn(i, 6, FIGURES::PAWN, 1, PawnWhite);
 		figures[(i * 10 + 6)] = std::make_shared<Pawn>(WhitePawn);
-	}
+	}*/
 
 	Rook WhiteLeftRook(0, 7, FIGURES::ROOK, 1, RookWhite);
 	figures[7] = std::make_shared<Rook>(WhiteLeftRook);
@@ -252,7 +394,7 @@ COMMANDS playGame(bool versusComputer = false) {
 	King WhiteKing(4, 7, FIGURES::KING, 1, KingWhite);
 	figures[47] = std::make_shared<King>(WhiteKing);
 
-	for (int i = 0; i < 8; i++) {
+	/*for (int i = 0; i < 8; i++) {
 		Pawn BlackPawn(i, 1, FIGURES::PAWN, -1, PawnBlack);
 		figures[(i * 10 + 1)] = std::make_shared<Pawn>(BlackPawn);
 	}
@@ -270,7 +412,7 @@ COMMANDS playGame(bool versusComputer = false) {
 	Bishop BlackLeftBishop(2, 0, FIGURES::BISHOP, -1, BishopBlack);
 	figures[20] = std::make_shared<Bishop>(BlackLeftBishop);
 	Bishop BlackRightBishop(5, 0, FIGURES::BISHOP, -1, BishopBlack);
-	figures[50] = std::make_shared<Bishop>(BlackRightBishop);
+	figures[50] = std::make_shared<Bishop>(BlackRightBishop);*/
 
 	Queen BlackQueen(3, 0, FIGURES::QUEEN, -1, QueenBlack);
 	figures[30] = std::make_shared<Queen>(BlackQueen);
@@ -331,6 +473,11 @@ COMMANDS playGame(bool versusComputer = false) {
 
 			if (!victoryAchived) {
 				std::string s = getNextMove(position); //get AI move
+				if (s == "error") {
+					victoryAchived = true;
+					winTeam = 1;
+					continue;
+				}
 				//std::string s = "e8c8";
 				oldPos2 = toCoord(s[0], s[1]);
 				newPos2 = toCoord(s[2], s[3]);
@@ -460,6 +607,7 @@ COMMANDS playGame(bool versusComputer = false) {
 
 						if (f)
 						{
+
 							if (n->second->getFigureType() == FIGURES::KING && std::abs(oldPos2.x - p.x) > 1) {
 								if (team == 1) {
 									if (p.x == 6) {
@@ -563,6 +711,14 @@ COMMANDS playGame(bool versusComputer = false) {
 							else team = 1;
 							showPrompts = false; // the move is correct, dont need to show prompts
 							
+							STATE state = checkOrCheckmate(team);
+							if (state == STATE::OK)
+								std::cout << "OK\n";
+							else if (state == STATE::CHECK)
+								std::cout << "CHECK\n";
+							else
+								std::cout << "CHECKMATE\n";
+
 							//add move to comutation string for AI
 							if (versusComputer)
 								position += (toChessNote(oldPos2.x, oldPos2.y)

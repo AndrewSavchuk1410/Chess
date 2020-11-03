@@ -9,7 +9,7 @@ STARTUPINFO sti = { 0 };
 SECURITY_ATTRIBUTES sats = { 0 };
 PROCESS_INFORMATION pi = { 0 };
 HANDLE pipin_w, pipin_r, pipout_w, pipout_r;
-BYTE buffer[2048];
+BYTE buffer[10240];
 DWORD writ, excode, read, available;
 
 

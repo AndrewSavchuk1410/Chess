@@ -170,10 +170,10 @@ void Figure::setPos() {
 }
 
 void Figure::updateBoard(int _x, int _y) {
-	outBoard();
+	//outBoard();
 	int k = board[x][y];
 	board[x][y] = 0;
-	board[_x][_y] =k;
+	board[_x][_y] = k;
 	x = _x;
 	y = _y;
 

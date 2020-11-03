@@ -1,3 +1,72 @@
 ﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v150\Microsoft.CppBuild.targets(391,5): warning MSB8028: промежуточный каталог (Debug\) содержит файлы, которые используются совместно с другим проектом (Test.vcxproj).  Это может привести к ошибкам очистки и перестроения.
-  King.cpp
+  main.cpp
+c:\test work\chess\test\main.cpp(253): warning C4018: <: несоответствие типов со знаком и без знака
+c:\test work\chess\test\main.cpp(254): warning C4018: <: несоответствие типов со знаком и без знака
+c:\test work\chess\test\main.cpp(259): warning C4244: аргумент: преобразование "const float" в "unsigned int", возможна потеря данных
+c:\test work\chess\test\main.cpp(259): warning C4244: аргумент: преобразование "float" в "unsigned int", возможна потеря данных
+c:\test work\chess\test\main.cpp(542): warning C4018: <: несоответствие типов со знаком и без знака
+c:\test work\chess\test\main.cpp(543): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=int
+          ]
+          and
+          [
+              T=float
+          ]
+c:\test work\chess\test\main.cpp(567): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=int
+          ]
+          and
+          [
+              T=float
+          ]
+c:\test work\chess\test\main.cpp(574): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=int
+          ]
+          and
+          [
+              T=float
+          ]
+c:\test work\chess\test\main.cpp(583): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=int
+          ]
+          and
+          [
+              T=float
+          ]
+c:\test work\chess\test\main.cpp(769): warning C4018: <: несоответствие типов со знаком и без знака
+c:\test work\chess\test\main.cpp(866): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=int
+          ]
+          and
+          [
+              T=float
+          ]
+c:\test work\chess\test\main.cpp(873): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=int
+          ]
+          and
+          [
+              T=float
+          ]
+c:\test work\chess\test\main.cpp(880): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=int
+          ]
+          and
+          [
+              T=float
+          ]
   Test.vcxproj -> C:\Test work\Chess\Test\Debug\Chess.exe
