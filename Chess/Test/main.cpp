@@ -123,10 +123,11 @@ std::vector<PointInt> getAllMoves(int team) { //finds all moves that enemy team 
 			}
 		}
 	}
+
 	return allMoves;
 }
 
-std::vector<PointInt> getAllMovesWithNoKing(int team) { //finds all moves that enemy team can make, if there is enemy king on the board
+std::vector<PointInt> getAllMovesWithNoKing(int team) { //finds all moves that enemy team can make, if there is no king on the board
 	int x, y;
 
 	for (auto it : figures) {
@@ -151,6 +152,103 @@ std::vector<PointInt> getAllMovesWithNoKing(int team) { //finds all moves that e
 	return allMoves;
 }
 
+std::vector<PointInt> kingMovesIfCheck(std::shared_ptr<Figure> king) {
+	king->findAvaliableCells();
+	auto kingMoves = king->getAvaliableCells();
+	std::vector<PointInt> avaliableCells, allMoves;
+	PointInt p = { king->getX(), king->getY() };
+	int oldX = king->getX();
+	int oldY = king->getY();
+	int oldPos = oldX * 10 + oldY;
+
+	for (auto i : kingMoves) {
+		int posValue = board[i.x][i.y];
+		int newPos = i.x * 10 + i.y;
+
+		if (board[i.x][i.y] != 0);
+		auto someFigure = figures[newPos]; //save the figure that we are going delete temporarily
+		if (posValue == 0)
+			figures.erase(newPos);
+
+		std::map<const int, std::shared_ptr<Figure>>::iterator nn = figures.lower_bound(oldPos);;
+
+		updateFigurs(nn->second->getX(), nn->second->getY(), i.x, i.y);
+		nn = figures.lower_bound(newPos);
+		nn->second->updateBoard(i.x, i.y);
+
+		allMoves = getAllMovesWithNoKing(king->getTeam());
+		
+		if (std::find(allMoves.begin(), allMoves.end(), i) == allMoves.end()) {
+			avaliableCells.push_back(i);
+		}
+
+		nn = figures.lower_bound(newPos);
+		updateFigurs(nn->second->getX(), nn->second->getY(), oldX, oldY);
+		nn = figures.lower_bound(oldPos);
+		nn->second->updateBoard(oldX, oldY);
+
+		if (posValue != 0)
+			figures[newPos] = someFigure;
+
+		board[i.x][i.y] = posValue;
+	}
+
+	return avaliableCells;
+}
+
+std::vector<PointInt> figureMoveIfCheck(std::shared_ptr<Figure> figure) {
+	int oldX = figure->getX();
+	int oldY = figure->getY();
+	int oldPos = oldX * 10 + oldY;
+	std::vector<PointInt> figureMoves;
+	PointInt kingPos;
+
+	for (auto it : figures) {
+		if (it.second->getFigureType() == FIGURES::KING && it.second->getTeam() == figure->getTeam()) {
+			kingPos = { it.second->getX(), it.second->getY() };
+			break;
+		}
+	}
+
+	figure->findAvaliableCells();
+	auto arr = figure->getAvaliableCells();
+
+
+	for (auto i : arr) {
+		int posValue = board[i.x][i.y];
+		int newPos = i.x * 10 + i.y;
+
+		if (board[i.x][i.y] != 0);
+		auto someFigure = figures[newPos]; //save the figure that we are going delete temporarily
+		if (posValue == 0)
+			figures.erase(newPos);
+
+		std::map<const int, std::shared_ptr<Figure>>::iterator nn = figures.lower_bound(oldPos);;
+
+		updateFigurs(nn->second->getX(), nn->second->getY(), i.x, i.y);
+		nn = figures.lower_bound(newPos);
+		nn->second->updateBoard(i.x, i.y);
+
+		auto allMoves = getAllMoves(figure->getTeam());
+
+		if (std::find(allMoves.begin(), allMoves.end(), kingPos) == allMoves.end()) {
+			figureMoves.push_back({ i.x, i.y });
+		}
+
+		nn = figures.lower_bound(newPos);
+		updateFigurs(nn->second->getX(), nn->second->getY(), oldX, oldY);
+		nn = figures.lower_bound(oldPos);
+		nn->second->updateBoard(oldX, oldY);
+
+		if (posValue != 0)
+			figures[newPos] = someFigure;
+
+		board[i.x][i.y] = posValue;
+	}
+
+	return figureMoves;
+}
+
 STATE checkOrCheckmate(int team) {
 	int x, y;
 	
@@ -164,82 +262,39 @@ STATE checkOrCheckmate(int team) {
 
 	int pos = x * 10 + y;
 	auto king = figures[pos];
-	king->findAvaliableCells();
-	auto kingMoves = king->getAvaliableCells();
-	
-	for (auto J : figures)
-		std::cout << J.first << ' ';
-	std::cout << '\n';
+	PointInt kingPos = { x, y }; // king`s x and y
 
 	std::vector<PointInt> allMoves = getAllMovesWithNoKing(team);
 
-	for (auto J : figures)
-		std::cout << J.first << ' ';
-	std::cout << std::endl;
-
-	PointInt p = { king->getX(), king->getY() };
-
-	if (std::find(allMoves.begin(), allMoves.end(), p) == allMoves.end()) {
+	if (std::find(allMoves.begin(), allMoves.end(), kingPos) == allMoves.end()) {
 		return STATE::OK;
 	}
 
 	bool check1 = false;
-	for (auto j : kingMoves) {
-		if (std::find(allMoves.begin(), allMoves.end(), j) == allMoves.end()) {
-			check1 = true;
-		}
-	}
 
+	auto avaliableCells = kingMovesIfCheck(king);
+	if (!(avaliableCells.empty())) check1 = true;
 	if (check1) return STATE::CHECK;
 
-	PointInt kingPos = { x, y }; // king`s x and y
-	for (auto it : figures) {
-		if (it.second->getTeam() == team) {
-			it.second->findAvaliableCells();
+	auto it = figures.begin();
+	int n = figures.size();
+
+	for (int q = 0; q < n; q ++) {
+		int oldX = it->second->getX();
+		int oldY = it->second->getY();
+		int oldPos = oldX * 10 + oldY;
+
+		if (it->second->getTeam() == team && it->second->getFigureType() != FIGURES::KING) {
 			
-			for (auto i : it.second->getAvaliableCells()) {
-				bool check2 = false;
-				int posValue = board[i.x][i.y];
-				int oldX = it.second->getX();
-				int oldY = it.second->getY();
-				int oldPos = oldX * 10 + oldY;
-				int newPos = i.x * 10 + i.y;
-
-				/*std::shared_ptr<Figure> someFigure = nullptr; //save the figure that we are going delete temporarily
-				if (figures[newPos] != nullptr) {
-					someFigure = figures[newPos];
-				}*/
-
-				std::map<const int, std::shared_ptr<Figure>>::iterator n;
-				
-				/*n = figures.lower_bound(oldPos);
-				updateFigurs(n->second->getX(), n->second->getY(), i.x, i.y);
-				n = figures.lower_bound(newPos);
-				n->second->updateBoard(i.x, i.y);*/
-
-
-				allMoves = getAllMoves(team);
-				
-				if (std::find(allMoves.begin(), allMoves.end(), kingPos) == allMoves.end())
-					check2 = true;
-
-				/*updateFigurs(n->second->getX(), n->second->getY(), oldX, oldY);
-				n = figures.lower_bound(oldPos);
-				n->second->updateBoard(oldX, oldY);
-
-				if (someFigure != nullptr)
-					figures[newPos] = someFigure;
-
-				board[i.x][i.y] = posValue;
-				//std::cout << it.first << '\n';*/
-				if (check2) return STATE::CHECK;
+			auto figuresMoves = figureMoveIfCheck(it->second);
+			if (!figuresMoves.empty()) {
+				return STATE::CHECK;
 			}
 		}
+
+		it = std::next(figures.lower_bound(oldPos));
 	}
-	if (!check1)
 		return STATE::CHECKMATE;
-	else
-		return STATE::CHECK;
 }
 
 
@@ -258,7 +313,7 @@ COMMANDS playGame(bool versusComputer = false) {
 
 	RenderWindow window(VideoMode(width + 400, height), "Chess", sf::Style::Close);
 	Texture _board, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, whitesTurn, blacksTurn,
-		menu, playAgain, quit, prompt;
+		menu, playAgain, quit, prompt, checkTexture;
 	
 	//   load textures
 	_board.loadFromFile("images/Board.png");
@@ -268,6 +323,7 @@ COMMANDS playGame(bool versusComputer = false) {
 	quit.loadFromFile("images/QUIT.png");
 	playAgain.loadFromFile("images/PLAY_AGAIN.png");
 	prompt.loadFromFile("images/prompt.png");
+	checkTexture.loadFromFile("images/CHECK.png");
 
 	t1.loadFromFile("images/KingWhite.png");
 	t2.loadFromFile("images/QueenWhite.png");			
@@ -287,6 +343,8 @@ COMMANDS playGame(bool versusComputer = false) {
 	menu.setSmooth(true);
 	playAgain.setSmooth(true);
 	prompt.setSmooth(true);
+	checkTexture.setSmooth(true);
+
 	t1.setSmooth(true);
 	t2.setSmooth(true);
 	t3.setSmooth(true);
@@ -320,15 +378,16 @@ COMMANDS playGame(bool versusComputer = false) {
 	Sprite sMenu(menu);
 	Sprite sPlayAgain(playAgain);
 	Sprite sQuit(quit);
+	Sprite sCheck(checkTexture);
 
 	sMenu.setPosition(840 + (400 - sMenu.getGlobalBounds().width) / 2,
-		 (400 + sMenu.getGlobalBounds().height) / 2);
+		 (610 + sMenu.getGlobalBounds().height) / 2);
 
 	sPlayAgain.setPosition(840 + (400 - sPlayAgain.getGlobalBounds().width) / 2,
 		370 + (400 - sPlayAgain.getGlobalBounds().height) / 2);
 
 	sQuit.setPosition(840 + (400 - sQuit.getGlobalBounds().width) / 2,
-		(550 + sQuit.getGlobalBounds().height) / 2);
+		(760 + sQuit.getGlobalBounds().height) / 2);
 
 	Sprite KingWhite(t1);
 	changeSpriteScale(KingWhite);
@@ -369,10 +428,10 @@ COMMANDS playGame(bool versusComputer = false) {
 
 	// make map of all figures
 
-	/*for (int i = 0; i < 8; i++) {
+	for (int i = 0; i < 8; i++) {
 		Pawn WhitePawn(i, 6, FIGURES::PAWN, 1, PawnWhite);
 		figures[(i * 10 + 6)] = std::make_shared<Pawn>(WhitePawn);
-	}*/
+	}
 
 	Rook WhiteLeftRook(0, 7, FIGURES::ROOK, 1, RookWhite);
 	figures[7] = std::make_shared<Rook>(WhiteLeftRook);
@@ -394,7 +453,7 @@ COMMANDS playGame(bool versusComputer = false) {
 	King WhiteKing(4, 7, FIGURES::KING, 1, KingWhite);
 	figures[47] = std::make_shared<King>(WhiteKing);
 
-	/*for (int i = 0; i < 8; i++) {
+	for (int i = 0; i < 8; i++) {
 		Pawn BlackPawn(i, 1, FIGURES::PAWN, -1, PawnBlack);
 		figures[(i * 10 + 1)] = std::make_shared<Pawn>(BlackPawn);
 	}
@@ -412,7 +471,7 @@ COMMANDS playGame(bool versusComputer = false) {
 	Bishop BlackLeftBishop(2, 0, FIGURES::BISHOP, -1, BishopBlack);
 	figures[20] = std::make_shared<Bishop>(BlackLeftBishop);
 	Bishop BlackRightBishop(5, 0, FIGURES::BISHOP, -1, BishopBlack);
-	figures[50] = std::make_shared<Bishop>(BlackRightBishop);*/
+	figures[50] = std::make_shared<Bishop>(BlackRightBishop);
 
 	Queen BlackQueen(3, 0, FIGURES::QUEEN, -1, QueenBlack);
 	figures[30] = std::make_shared<Queen>(BlackQueen);
@@ -423,6 +482,7 @@ COMMANDS playGame(bool versusComputer = false) {
 
 	bool isMove = false, correctClick = false, victoryAchived = false, showTurn = 1,
 		showPrompts = false;
+	STATE state = STATE::OK;
 	float dx = 0, dy = 0;
 	Vector2f oldPos, newPos;
 	Vector2i oldPos2, newPos2;
@@ -435,7 +495,10 @@ COMMANDS playGame(bool versusComputer = false) {
 
 	while (window.isOpen())
 	{
-
+		if (state == STATE::CHECKMATE) {
+			victoryAchived = true;
+			winTeam = team * -1;
+		}
 		// AI move
 		if (versusComputer && team == -1 && !victoryAchived) {
 			
@@ -454,7 +517,7 @@ COMMANDS playGame(bool versusComputer = false) {
 			}
 
 			//find out if there is a checkmate
-			for (auto i : figures) {
+			/*for (auto i : figures) {
 				if (i.second->getTeam() == -1) {
 					i.second->findAvaliableCells();
 					std::vector <PointInt> cells = i.second->getAvaliableCells();
@@ -467,7 +530,7 @@ COMMANDS playGame(bool versusComputer = false) {
 					}
 				}
 				if (victoryAchived) break;
-			}
+			}*/
 
 			//if there was not checkmate, make AI move
 
@@ -524,6 +587,13 @@ COMMANDS playGame(bool versusComputer = false) {
 				position += (s + ' '); 
 				std::cout << position << '\n';
 				team = 1;
+				state = checkOrCheckmate(team);
+				if (state == STATE::OK)
+					std::cout << "OK\n";
+				else if (state == STATE::CHECK)
+					std::cout << "CHECK\n";
+				else
+					std::cout << "CHECKMATE\n";
 			}
 		}
 
@@ -593,15 +663,38 @@ COMMANDS playGame(bool versusComputer = false) {
 				if (event.key.code == Mouse::Left) {
 					if ((correctClick) && !victoryAchived) {
 						PointInt p = findIntPoint(pos);
-						n->second->findAvaliableCells(); //find all cells, that are reachable from
-														 //chosen figure position
 						bool f = false;
-						for (auto j : n->second->getAvaliableCells()) {
-							if (j.x == p.x && j.y == p.y) {
-								f = true; // if position whith choose player is in vector of 
-										  // reacheble cells
-								break;
 
+						if (state != STATE::CHECK) {
+							n->second->findAvaliableCells(); //find all cells, that are reachable from
+															 //chosen figure position
+							int nPos = n->second->getX() * 10 + n->second->getY();
+							for (auto j : figureMoveIfCheck(n->second)) {
+								if (j.x == p.x && j.y == p.y) {
+									
+									
+									f = true; // if position whith choose player is in vector of 
+											  // reacheble cells
+									break;
+								}
+							}
+							n = figures.lower_bound(nPos);
+						}
+						else if (state == STATE::CHECK) {
+							std::vector<PointInt> arr;
+							int nPos = n->second->getX() * 10 + n->second->getY();
+							if (n->second->getFigureType() == FIGURES::KING)
+								arr = kingMovesIfCheck(n->second);
+							else
+								arr = figureMoveIfCheck(n->second);
+							n = figures.lower_bound(nPos);
+							
+							for (auto j : arr) {
+								if (j.x == p.x && j.y == p.y) {
+									f = true; // if position whith choose player is in vector of 
+											  // reacheble cells
+									break;
+								}
 							}
 						}
 
@@ -711,7 +804,7 @@ COMMANDS playGame(bool versusComputer = false) {
 							else team = 1;
 							showPrompts = false; // the move is correct, dont need to show prompts
 							
-							STATE state = checkOrCheckmate(team);
+							state = checkOrCheckmate(team);
 							if (state == STATE::OK)
 								std::cout << "OK\n";
 							else if (state == STATE::CHECK)
@@ -726,9 +819,12 @@ COMMANDS playGame(bool versusComputer = false) {
 						}
 						else
 						{
-							n->second->updateSprite(oldPos.x, oldPos.y); // moves sprite to it old
-																		 // position
-							prompts = n->second->getAvaliableCells();    // find prompts
+							n->second->updateSprite(oldPos.x, oldPos.y); // moves sprite to it old position
+
+							if (n->second->getFigureType() == FIGURES::KING)
+								prompts = kingMovesIfCheck(n->second);
+							else
+								prompts = figureMoveIfCheck(n->second);    // find prompts
 							showPrompts = true;
 						}
 						isMove = false;
@@ -755,13 +851,28 @@ COMMANDS playGame(bool versusComputer = false) {
 			}
 		}
 
-
+		if (state == STATE::CHECKMATE) {
+			victoryAchived = true;
+			winTeam = team * -1;
+		}
 		//shows turn
-		if (showTurn) {
-			if (team == 1)
+		if (showTurn && !victoryAchived) {
+			if (team == 1) {
 				window.draw(sWhitesTurn);
-			else if (team == -1 && !versusComputer)
+				if (state == STATE::CHECK) {
+					sCheck.setPosition(840 + (400 - sCheck.getGlobalBounds().width) / 2,
+						500 + (sCheck.getGlobalBounds().height) / 2);
+					window.draw(sCheck);
+				}
+			}
+			else if (team == -1 && !versusComputer) {
 				window.draw(sBlacksTurn);
+				if (state == STATE::CHECK) {
+					sCheck.setPosition(840 + (400 - sCheck.getGlobalBounds().width) / 2,
+						200 + (sCheck.getGlobalBounds().height) / 2);
+					window.draw(sCheck);
+				}
+			}
 		}
 
 		//shows figurs on the board
@@ -770,6 +881,8 @@ COMMANDS playGame(bool versusComputer = false) {
 			window.draw(it->second->getSprite());
 			it++;
 		}
+
+		
 
 		//shows who won and shows victory menu
 		if (victoryAchived) {

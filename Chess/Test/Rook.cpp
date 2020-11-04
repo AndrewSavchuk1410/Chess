@@ -10,7 +10,8 @@ void Rook::findAvaliableCells() {
 	avaliableCells.resize(0);
 	horizontalSearh(steps);
 	verticalSearh(steps);
-	/*for (auto i : avaliableCells) {
+	/*std::cout << "ROOK\n";
+	for (auto i : avaliableCells) {
 		std::cout << " x = " << i.x << " y = " << i.y << '\n';
 	}
 	if (!avaliableCells.size())

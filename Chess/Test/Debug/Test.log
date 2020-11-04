@@ -1,11 +1,13 @@
 ﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v150\Microsoft.CppBuild.targets(391,5): warning MSB8028: промежуточный каталог (Debug\) содержит файлы, которые используются совместно с другим проектом (Test.vcxproj).  Это может привести к ошибкам очистки и перестроения.
   main.cpp
-c:\test work\chess\test\main.cpp(253): warning C4018: <: несоответствие типов со знаком и без знака
-c:\test work\chess\test\main.cpp(254): warning C4018: <: несоответствие типов со знаком и без знака
-c:\test work\chess\test\main.cpp(259): warning C4244: аргумент: преобразование "const float" в "unsigned int", возможна потеря данных
-c:\test work\chess\test\main.cpp(259): warning C4244: аргумент: преобразование "float" в "unsigned int", возможна потеря данных
-c:\test work\chess\test\main.cpp(542): warning C4018: <: несоответствие типов со знаком и без знака
-c:\test work\chess\test\main.cpp(543): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+c:\test work\chess\test\main.cpp(168): warning C4390: ";": обнаружен пустой контролируемый оператор; это правильно?
+c:\test work\chess\test\main.cpp(221): warning C4390: ";": обнаружен пустой контролируемый оператор; это правильно?
+c:\test work\chess\test\main.cpp(308): warning C4018: <: несоответствие типов со знаком и без знака
+c:\test work\chess\test\main.cpp(309): warning C4018: <: несоответствие типов со знаком и без знака
+c:\test work\chess\test\main.cpp(314): warning C4244: аргумент: преобразование "const float" в "unsigned int", возможна потеря данных
+c:\test work\chess\test\main.cpp(314): warning C4244: аргумент: преобразование "float" в "unsigned int", возможна потеря данных
+c:\test work\chess\test\main.cpp(612): warning C4018: <: несоответствие типов со знаком и без знака
+c:\test work\chess\test\main.cpp(613): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
           with
           [
               T=int
@@ -14,7 +16,7 @@ c:\test work\chess\test\main.cpp(543): warning C4244: аргумент: прео
           [
               T=float
           ]
-c:\test work\chess\test\main.cpp(567): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+c:\test work\chess\test\main.cpp(637): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
           with
           [
               T=int
@@ -23,7 +25,7 @@ c:\test work\chess\test\main.cpp(567): warning C4244: аргумент: прео
           [
               T=float
           ]
-c:\test work\chess\test\main.cpp(574): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+c:\test work\chess\test\main.cpp(644): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
           with
           [
               T=int
@@ -32,7 +34,7 @@ c:\test work\chess\test\main.cpp(574): warning C4244: аргумент: прео
           [
               T=float
           ]
-c:\test work\chess\test\main.cpp(583): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+c:\test work\chess\test\main.cpp(653): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
           with
           [
               T=int
@@ -41,8 +43,8 @@ c:\test work\chess\test\main.cpp(583): warning C4244: аргумент: прео
           [
               T=float
           ]
-c:\test work\chess\test\main.cpp(769): warning C4018: <: несоответствие типов со знаком и без знака
-c:\test work\chess\test\main.cpp(866): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+c:\test work\chess\test\main.cpp(880): warning C4018: <: несоответствие типов со знаком и без знака
+c:\test work\chess\test\main.cpp(979): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
           with
           [
               T=int
@@ -51,7 +53,7 @@ c:\test work\chess\test\main.cpp(866): warning C4244: аргумент: прео
           [
               T=float
           ]
-c:\test work\chess\test\main.cpp(873): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+c:\test work\chess\test\main.cpp(986): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
           with
           [
               T=int
@@ -60,7 +62,7 @@ c:\test work\chess\test\main.cpp(873): warning C4244: аргумент: прео
           [
               T=float
           ]
-c:\test work\chess\test\main.cpp(880): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+c:\test work\chess\test\main.cpp(993): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
           with
           [
               T=int
