@@ -51,9 +51,12 @@ std::string getNextMove(std::string position)
     } while (read >= sizeof(buffer));
 
     int n = str.find("bestmove");
+    std::cout << str << "\n";
     if (n != -1) return str.substr(n + 9, 4);
 
-    return "error";
+    //return "error";
+    
+    return str.substr(str.size() - 6, 4);
 }
 
 void CloseConnection()

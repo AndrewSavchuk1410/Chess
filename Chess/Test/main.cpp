@@ -176,7 +176,7 @@ std::vector<PointInt> kingMovesIfCheck(std::shared_ptr<Figure> king) {
 		nn = figures.lower_bound(newPos);
 		nn->second->updateBoard(i.x, i.y);
 
-		allMoves = getAllMovesWithNoKing(king->getTeam());
+		allMoves = getAllMoves(king->getTeam());
 		
 		if (std::find(allMoves.begin(), allMoves.end(), i) == allMoves.end()) {
 			avaliableCells.push_back(i);
@@ -536,11 +536,14 @@ COMMANDS playGame(bool versusComputer = false) {
 
 			if (!victoryAchived) {
 				std::string s = getNextMove(position); //get AI move
-				if (s == "error") {
+				/*if (s == "error") {
 					victoryAchived = true;
 					winTeam = 1;
-					continue;
-				}
+					
+					while (s != "error") {
+						s = getNextMove(position);
+					}continue;
+				}*/
 				//std::string s = "e8c8";
 				oldPos2 = toCoord(s[0], s[1]);
 				newPos2 = toCoord(s[2], s[3]);
@@ -559,6 +562,8 @@ COMMANDS playGame(bool versusComputer = false) {
 					chosenKing->second->setPos();
 					chosenRook->second->updateBoard(newPos2.x - 1, newPos2.y);
 					chosenRook->second->setPos();
+					chosenKing->second->updateHasMoved(true);
+					chosenRook->second->updateHasMoved(true);
 				}
 				else if (oldPos2.x == 4 && oldPos2.y == 0 && newPos2.x == 2 && newPos2.y == 0) {
 					int KingNewPos = (newPos2.x) * 10 + newPos2.y;
@@ -574,6 +579,8 @@ COMMANDS playGame(bool versusComputer = false) {
 					chosenKing->second->setPos();
 					chosenRook->second->updateBoard(newPos2.x + 1, newPos2.y);
 					chosenRook->second->setPos();
+					chosenKing->second->updateHasMoved(true);
+					chosenRook->second->updateHasMoved(true);
 				}
 				else {
 					int pos2 = newPos2.x * 10 + newPos2.y; // compute new key for figure
@@ -583,6 +590,7 @@ COMMANDS playGame(bool versusComputer = false) {
 
 					chosenFigure->second->updateBoard(newPos2.x, newPos2.y);
 					chosenFigure->second->setPos();
+					chosenFigure->second->updateHasMoved(true);
 				}
 				position += (s + ' '); 
 				std::cout << position << '\n';
@@ -665,7 +673,7 @@ COMMANDS playGame(bool versusComputer = false) {
 						PointInt p = findIntPoint(pos);
 						bool f = false;
 
-						if (state != STATE::CHECK) {
+						/*if (state != STATE::CHECK) {
 							n->second->findAvaliableCells(); //find all cells, that are reachable from
 															 //chosen figure position
 							int nPos = n->second->getX() * 10 + n->second->getY();
@@ -680,7 +688,7 @@ COMMANDS playGame(bool versusComputer = false) {
 							}
 							n = figures.lower_bound(nPos);
 						}
-						else if (state == STATE::CHECK) {
+						else*/ if (state == STATE::CHECK || state != STATE::CHECK) {
 							std::vector<PointInt> arr;
 							int nPos = n->second->getX() * 10 + n->second->getY();
 							if (n->second->getFigureType() == FIGURES::KING)
@@ -689,6 +697,11 @@ COMMANDS playGame(bool versusComputer = false) {
 								arr = figureMoveIfCheck(n->second);
 							n = figures.lower_bound(nPos);
 							
+							std::cout << "arr:\n";
+							for (auto i : arr) {
+								std::cout << i.x << ' ' << i.y << '\n';
+							}
+
 							for (auto j : arr) {
 								if (j.x == p.x && j.y == p.y) {
 									f = true; // if position whith choose player is in vector of 
@@ -782,12 +795,12 @@ COMMANDS playGame(bool versusComputer = false) {
 							else {
 								int pos = p.x * 10 + p.y;
 								//if one of players(not AI) made checkmate
-								if (figures[pos] != nullptr &&
+								/*if (figures[pos] != nullptr &&
 									figures[pos]->getFigureType() == FIGURES::KING) {
 									victoryAchived = true;
 									showTurn = false;
 									winTeam = n->second->getTeam();
-								}
+								}*/
 								updateFigurs(n->second->getX(), n->second->getY(), p.x, p.y);
 
 								n = figures.lower_bound(pos);
@@ -825,6 +838,12 @@ COMMANDS playGame(bool versusComputer = false) {
 								prompts = kingMovesIfCheck(n->second);
 							else
 								prompts = figureMoveIfCheck(n->second);    // find prompts
+							
+							std::cout << "prompts:\n";
+							for (auto i : prompts) {
+								std::cout << i.x << ' ' << i.y << '\n';
+							}
+
 							showPrompts = true;
 						}
 						isMove = false;
