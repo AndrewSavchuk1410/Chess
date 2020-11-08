@@ -35,7 +35,7 @@ void ConnectToEngine(char* path)
 
 std::string getNextMove(std::string position)
 {
-    std::string str;
+    std::string str, ans;
     position = "position startpos moves " + position + "\ngo\n";
 
     WriteFile(pipin_w, position.c_str(), position.length(), &writ, NULL);
@@ -52,11 +52,19 @@ std::string getNextMove(std::string position)
 
     int n = str.find("bestmove");
     std::cout << str << "\n";
-    if (n != -1) return str.substr(n + 9, 4);
+   // if (n != -1) ans = str.substr(n + 9, 4);
+    //n = position.find(ans);
+    //if (n != -1) return ans;
 
-    //return "error";
+    n = str.find(" pv ");
+    if (n != -1) {
+        ans = str.substr(n + 4, 4);
+        std::cout << std::endl << "ANS "<< ans << std::endl;
+        return ans;
+    }
     
-    return str.substr(str.size() - 6, 4);
+    return "error";
+    
 }
 
 void CloseConnection()

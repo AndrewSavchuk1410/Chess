@@ -90,8 +90,8 @@ PointInt findIntPoint(Vector2i pos) {
 
 void setPos(sf::Sprite &sprite, int x, int y) {
 	Point p;
-	p.x = float(30 + 100 * x);
-	p.y = float(7 + 100 * y);
+	p.x = float(60 + 100 * x);
+	p.y = float(35 + 100 * y);
 	sprite.setPosition(p.x, p.y);
 }
 
@@ -107,7 +107,7 @@ Vector2i toCoord(char a, char b)
 {
 	int x = int(a) - 97;
 	int y = 7 - (7 - int(b) + 49);
-	//std::cout << "Y " << y << '\n';
+	std::cout << "Y " << y << '\n';
 	y = convertedY[y];
 	return Vector2i(x, y);
 }
@@ -165,7 +165,6 @@ std::vector<PointInt> kingMovesIfCheck(std::shared_ptr<Figure> king) {
 		int posValue = board[i.x][i.y];
 		int newPos = i.x * 10 + i.y;
 
-		if (board[i.x][i.y] != 0);
 		auto someFigure = figures[newPos]; //save the figure that we are going delete temporarily
 		if (posValue == 0)
 			figures.erase(newPos);
@@ -264,7 +263,7 @@ STATE checkOrCheckmate(int team) {
 	auto king = figures[pos];
 	PointInt kingPos = { x, y }; // king`s x and y
 
-	std::vector<PointInt> allMoves = getAllMovesWithNoKing(team);
+	std::vector<PointInt> allMoves = getAllMoves(team);
 
 	if (std::find(allMoves.begin(), allMoves.end(), kingPos) == allMoves.end()) {
 		return STATE::OK;
@@ -297,6 +296,90 @@ STATE checkOrCheckmate(int team) {
 		return STATE::CHECKMATE;
 }
 
+FIGURES Promotion(int team) {
+	RenderWindow window(VideoMode(500, 150), "Choose figure for promotion", sf::Style::Close);
+	Texture queen, bishop, knight, rook;
+	if (team == 1) {
+		queen.loadFromFile("images/QueenWhite.png");
+		bishop.loadFromFile("images/BishopWhite.png");
+		knight.loadFromFile("images/KnightWhite.png");
+		rook.loadFromFile("images/RookWhite.png");
+	}
+	else if (team == -1) {
+		queen.loadFromFile("images/QueenBlack.png");
+		bishop.loadFromFile("images/BishopBlack.png");
+		knight.loadFromFile("images/KnightBlack.png");
+		rook.loadFromFile("images/RookBlack.png");
+	}
+
+	queen.setSmooth(true);
+	bishop.setSmooth(true);
+	knight.setSmooth(true);
+	rook.setSmooth(true);
+
+	double x = 12.5, y = 10;
+
+	Sprite sQueen(queen);
+	changeSpriteScale(sQueen);
+	sQueen.setPosition(x + sQueen.getGlobalBounds().width / 2,
+		y + sQueen.getGlobalBounds().height / 2);
+
+	Sprite sBishop(bishop);
+	changeSpriteScale(sBishop);
+	sBishop.setPosition(x * 2 + 100 + sBishop.getGlobalBounds().width / 2,
+		y + sBishop.getGlobalBounds().height / 2);
+
+	Sprite sKnight(knight);
+	changeSpriteScale(sKnight);
+	sKnight.setPosition(x * 2 + 200 + sKnight.getGlobalBounds().width / 2,
+		y + sKnight.getGlobalBounds().height / 2);
+
+	Sprite sRook(rook);
+	changeSpriteScale(sRook);
+	sRook.setPosition(x * 2 + 300 + sRook.getGlobalBounds().width / 2,
+		y + sRook.getGlobalBounds().height / 2);
+
+	while (window.isOpen()) {
+
+		Vector2i pos = Mouse::getPosition(window) - Vector2i(offset);
+
+		sf::Event event;
+		while (window.pollEvent(event))
+		{
+			if (event.type == Event::Closed)
+				window.close();
+
+			if (event.type == Event::MouseButtonPressed) {
+				if (event.key.code == Mouse::Left) {
+					if (sQueen.getGlobalBounds().contains(pos.x, pos.y)) {
+						window.close();
+						return FIGURES::QUEEN;
+					}
+					else if (sBishop.getGlobalBounds().contains(pos.x, pos.y)) {
+						window.close();
+						return FIGURES::BISHOP;
+					}
+					else if (sKnight.getGlobalBounds().contains(pos.x, pos.y)) {
+						window.close();
+						return FIGURES::KNIGHT;
+					}
+					else if (sRook.getGlobalBounds().contains(pos.x, pos.y)) {
+						window.close();
+						return FIGURES::ROOK;
+					}
+				}
+			}
+		}
+
+		sf::Color color(255, 255, 255);
+		window.clear(color);
+		window.draw(sQueen);
+		window.draw(sBishop);
+		window.draw(sKnight);
+		window.draw(sRook);
+		window.display();
+	}
+}
 
 COMMANDS playGame(bool versusComputer = false) {
 	
@@ -322,7 +405,7 @@ COMMANDS playGame(bool versusComputer = false) {
 	menu.loadFromFile("images/MENU.png");
 	quit.loadFromFile("images/QUIT.png");
 	playAgain.loadFromFile("images/PLAY_AGAIN.png");
-	prompt.loadFromFile("images/prompt.png");
+	prompt.loadFromFile("images/prompt22.png");
 	checkTexture.loadFromFile("images/CHECK.png");
 
 	t1.loadFromFile("images/KingWhite.png");
@@ -481,7 +564,7 @@ COMMANDS playGame(bool versusComputer = false) {
 
 
 	bool isMove = false, correctClick = false, victoryAchived = false, showTurn = 1,
-		showPrompts = false;
+		showPrompts = false, hto = false;
 	STATE state = STATE::OK;
 	float dx = 0, dy = 0;
 	Vector2f oldPos, newPos;
@@ -491,6 +574,12 @@ COMMANDS playGame(bool versusComputer = false) {
 	COMMANDS nextCommand = COMMANDS::QUIT;
 	std::vector <PointInt> prompts;
 	std::string position = "";
+	/*std::vector<std::string> newBoard = {
+		"e2e4", "d7d5", "e4d5", "d8d5", "c2c3", "e7e5", "d2d3", "g8f6", "d3d4", "b8c6", "d4e5", "d5d1", "e1d1", "c6e5", "g1f3 "
+		"e5g4", "d1e1", "f8c5", "f1b5", "c7c6", "b5a4", "c5f2", "e1d1", "c8e6", "h1f1", "e6c4", "f1e1", "f2e1", "d1e1", "e8c8"
+		" b2b3", "h8e8", "f3e5", "e8e5"
+	};
+	int newI = 0;*/
 
 
 	while (window.isOpen())
@@ -515,36 +604,13 @@ COMMANDS playGame(bool versusComputer = false) {
 					kingPos.y = i.second->getY();
 				}
 			}
-
-			//find out if there is a checkmate
-			/*for (auto i : figures) {
-				if (i.second->getTeam() == -1) {
-					i.second->findAvaliableCells();
-					std::vector <PointInt> cells = i.second->getAvaliableCells();
-					for (auto j : cells) {
-						if (j.x == kingPos.x && j.y == kingPos.y) {
-							victoryAchived = true;
-							winTeam = -1;
-							break;
-						}
-					}
-				}
-				if (victoryAchived) break;
-			}*/
-
 			//if there was not checkmate, make AI move
 
 			if (!victoryAchived) {
+				
 				std::string s = getNextMove(position); //get AI move
-				/*if (s == "error") {
-					victoryAchived = true;
-					winTeam = 1;
-					
-					while (s != "error") {
-						s = getNextMove(position);
-					}continue;
-				}*/
-				//std::string s = "e8c8";
+				std::cout << "s: " << s << std::endl;
+			
 				oldPos2 = toCoord(s[0], s[1]);
 				newPos2 = toCoord(s[2], s[3]);
 
@@ -673,22 +739,8 @@ COMMANDS playGame(bool versusComputer = false) {
 						PointInt p = findIntPoint(pos);
 						bool f = false;
 
-						/*if (state != STATE::CHECK) {
-							n->second->findAvaliableCells(); //find all cells, that are reachable from
-															 //chosen figure position
-							int nPos = n->second->getX() * 10 + n->second->getY();
-							for (auto j : figureMoveIfCheck(n->second)) {
-								if (j.x == p.x && j.y == p.y) {
-									
-									
-									f = true; // if position whith choose player is in vector of 
-											  // reacheble cells
-									break;
-								}
-							}
-							n = figures.lower_bound(nPos);
-						}
-						else*/ if (state == STATE::CHECK || state != STATE::CHECK) {
+						
+						if (state == STATE::CHECK || state != STATE::CHECK) {
 							std::vector<PointInt> arr;
 							int nPos = n->second->getX() * 10 + n->second->getY();
 							if (n->second->getFigureType() == FIGURES::KING)
@@ -794,13 +846,6 @@ COMMANDS playGame(bool versusComputer = false) {
 							}
 							else {
 								int pos = p.x * 10 + p.y;
-								//if one of players(not AI) made checkmate
-								/*if (figures[pos] != nullptr &&
-									figures[pos]->getFigureType() == FIGURES::KING) {
-									victoryAchived = true;
-									showTurn = false;
-									winTeam = n->second->getTeam();
-								}*/
 								updateFigurs(n->second->getX(), n->second->getY(), p.x, p.y);
 
 								n = figures.lower_bound(pos);
@@ -808,8 +853,46 @@ COMMANDS playGame(bool versusComputer = false) {
 								n->second->updateHasMoved(true);
 
 								n->second->setPos();
-								if (n->second->getFigureType() == FIGURES::PAWN && !n->second->ifHasMoved()) {
-									n->second->updateHasMoved(true);
+								if (n->second->getFigureType() == FIGURES::PAWN && !versusComputer) {
+									int x = n->second->getX(), y = n->second->getY();
+									if (y == 0) {
+										FIGURES figure = Promotion(team);
+										if (figure == FIGURES::QUEEN) {
+											Queen newWhiteQueen(x, y, FIGURES::QUEEN, 1, QueenWhite);
+											figures[x*10 + y] = std::make_shared<Queen>(newWhiteQueen);
+										}
+										else if (figure == FIGURES::BISHOP) {
+											Bishop newWhiteBishop(x, y, FIGURES::BISHOP, 1, BishopWhite);
+											figures[x * 10 + y] = std::make_shared<Bishop>(newWhiteBishop);
+										}
+										else if (figure == FIGURES::KNIGHT) {
+											Knight newWhiteKnight(x, y, FIGURES::KNIGHT, 1, KnightWhite);
+											figures[x * 10 + y] = std::make_shared<Knight>(newWhiteKnight);
+										}
+										else if (figure == FIGURES::ROOK) {
+											Rook newWhiteRook(x, y, FIGURES::ROOK, 1, RookWhite);
+											figures[x * 10 + y] = std::make_shared<Rook>(newWhiteRook);
+										}
+									}
+									else if (y == 7) {
+										FIGURES figure = Promotion(team);
+										if (figure == FIGURES::QUEEN) {
+											Queen newBlackQueen(x, y, FIGURES::QUEEN, -1, QueenBlack);
+											figures[x * 10 + y] = std::make_shared<Queen>(newBlackQueen);
+										}
+										else if (figure == FIGURES::BISHOP) {
+											Bishop newBlackBishop(x, y, FIGURES::BISHOP, -1, BishopBlack);
+											figures[x * 10 + y] = std::make_shared<Bishop>(newBlackBishop);
+										}
+										else if (figure == FIGURES::KNIGHT) {
+											Knight newBlackKnight(x, y, FIGURES::KNIGHT, -1, KnightBlack);
+											figures[x * 10 + y] = std::make_shared<Knight>(newBlackKnight);
+										}
+										else if (figure == FIGURES::ROOK) {
+											Rook newBlackRook(x, y, FIGURES::ROOK, -1, RookBlack);
+											figures[x * 10 + y] = std::make_shared<Rook>(newBlackRook);
+										}
+									}
 								}
 							}
 
@@ -861,15 +944,6 @@ COMMANDS playGame(bool versusComputer = false) {
 		window.clear(color);
 		window.draw(sBoard);
 
-		//if the player made mistake, shows prompts
-		if (showPrompts && !prompts.empty()) {
-			for (auto j : prompts) {
-				Sprite sPrompt(prompt);
-				setPos(sPrompt, j.x, j.y);
-				window.draw(sPrompt);
-			}
-		}
-
 		if (state == STATE::CHECKMATE) {
 			victoryAchived = true;
 			winTeam = team * -1;
@@ -901,7 +975,14 @@ COMMANDS playGame(bool versusComputer = false) {
 			it++;
 		}
 
-		
+		//if the player made mistake, shows prompts
+		if (showPrompts && !prompts.empty()) {
+			for (auto j : prompts) {
+				Sprite sPrompt(prompt);
+				setPos(sPrompt, j.x, j.y);
+				window.draw(sPrompt);
+			}
+		}
 
 		//shows who won and shows victory menu
 		if (victoryAchived) {
@@ -1040,11 +1121,14 @@ COMMANDS startMenu() {
 }
 
 int main()
-{
+{	
+	//Promotion(1);
+	//Promotion(-1);
 	//starts menu
 	COMMANDS nextCommand;
 	nextCommand = startMenu();
 
+	
 	//program
 	while (nextCommand != COMMANDS::QUIT) {
 		if (nextCommand == COMMANDS::VS_PLAYER)
