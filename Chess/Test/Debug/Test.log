@@ -1,1 +1,117 @@
-﻿  Test.vcxproj -> C:\Test work\Chess\Test\Debug\Chess.exe
+﻿  main.cpp
+c:\test work\chess\test\main.cpp(220): warning C4390: ";": обнаружен пустой контролируемый оператор; это правильно?
+c:\test work\chess\test\main.cpp(325): warning C4244: аргумент: преобразование "double" в "float", возможна потеря данных
+c:\test work\chess\test\main.cpp(324): warning C4244: аргумент: преобразование "double" в "float", возможна потеря данных
+c:\test work\chess\test\main.cpp(330): warning C4244: аргумент: преобразование "double" в "float", возможна потеря данных
+c:\test work\chess\test\main.cpp(329): warning C4244: аргумент: преобразование "double" в "float", возможна потеря данных
+c:\test work\chess\test\main.cpp(335): warning C4244: аргумент: преобразование "double" в "float", возможна потеря данных
+c:\test work\chess\test\main.cpp(334): warning C4244: аргумент: преобразование "double" в "float", возможна потеря данных
+c:\test work\chess\test\main.cpp(340): warning C4244: аргумент: преобразование "double" в "float", возможна потеря данных
+c:\test work\chess\test\main.cpp(339): warning C4244: аргумент: преобразование "double" в "float", возможна потеря данных
+c:\test work\chess\test\main.cpp(354): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=int
+          ]
+          and
+          [
+              T=float
+          ]
+c:\test work\chess\test\main.cpp(358): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=int
+          ]
+          and
+          [
+              T=float
+          ]
+c:\test work\chess\test\main.cpp(362): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=int
+          ]
+          and
+          [
+              T=float
+          ]
+c:\test work\chess\test\main.cpp(366): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=int
+          ]
+          and
+          [
+              T=float
+          ]
+c:\test work\chess\test\main.cpp(391): warning C4018: <: несоответствие типов со знаком и без знака
+c:\test work\chess\test\main.cpp(392): warning C4018: <: несоответствие типов со знаком и без знака
+c:\test work\chess\test\main.cpp(397): warning C4244: аргумент: преобразование "const float" в "unsigned int", возможна потеря данных
+c:\test work\chess\test\main.cpp(397): warning C4244: аргумент: преобразование "float" в "unsigned int", возможна потеря данных
+c:\test work\chess\test\main.cpp(704): warning C4018: <: несоответствие типов со знаком и без знака
+c:\test work\chess\test\main.cpp(705): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=int
+          ]
+          and
+          [
+              T=float
+          ]
+c:\test work\chess\test\main.cpp(729): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=int
+          ]
+          and
+          [
+              T=float
+          ]
+c:\test work\chess\test\main.cpp(736): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=int
+          ]
+          and
+          [
+              T=float
+          ]
+c:\test work\chess\test\main.cpp(745): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=int
+          ]
+          and
+          [
+              T=float
+          ]
+c:\test work\chess\test\main.cpp(995): warning C4018: <: несоответствие типов со знаком и без знака
+c:\test work\chess\test\main.cpp(1101): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=int
+          ]
+          and
+          [
+              T=float
+          ]
+c:\test work\chess\test\main.cpp(1108): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=int
+          ]
+          and
+          [
+              T=float
+          ]
+c:\test work\chess\test\main.cpp(1115): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=int
+          ]
+          and
+          [
+              T=float
+          ]
+c:\test work\chess\test\main.cpp(382): warning C4715: Promotion: значение возвращается не при всех путях выполнения
+  Test.vcxproj -> C:\Test work\Chess\Test\Debug\Chess.exe

@@ -792,7 +792,7 @@ COMMANDS playGame(bool versusComputer = false) {
 
 										updateFigurs(oldPos2.x, oldPos2.y, p.x, p.y);
 										updateFigurs(7, 7, p.x - 1, p.y);
-										std::cout << "YES";
+										//std::cout << "YES";
 										auto chosenKing = figures.lower_bound(KingNewPos);
 										auto chosenRook = figures.lower_bound(RookNewPos);
 										chosenKing->second->updateHasMoved(true);
@@ -810,7 +810,7 @@ COMMANDS playGame(bool versusComputer = false) {
 
 										updateFigurs(oldPos2.x, oldPos2.y, p.x, p.y);
 										updateFigurs(0, 7, p.x + 1, p.y);
-										std::cout << "YES2";
+										//std::cout << "YES2";
 										auto chosenKing = figures.lower_bound(KingNewPos);
 										auto chosenRook = figures.lower_bound(RookNewPos);
 										chosenKing->second->updateHasMoved(true);
@@ -830,7 +830,7 @@ COMMANDS playGame(bool versusComputer = false) {
 
 										updateFigurs(oldPos2.x, oldPos2.y, p.x, p.y);
 										updateFigurs(7, 0, p.x - 1, p.y);
-										std::cout << "YES";
+										//std::cout << "YES3";
 										auto chosenKing = figures.lower_bound(KingNewPos);
 										auto chosenRook = figures.lower_bound(RookNewPos);
 										chosenKing->second->updateHasMoved(true);
@@ -848,7 +848,7 @@ COMMANDS playGame(bool versusComputer = false) {
 
 										updateFigurs(oldPos2.x, oldPos2.y, p.x, p.y);
 										updateFigurs(0, 0, p.x + 1, p.y);
-										std::cout << "YES2";
+										//std::cout << "YES4";
 										auto chosenKing = figures.lower_bound(KingNewPos);
 										auto chosenRook = figures.lower_bound(RookNewPos);
 										chosenKing->second->updateHasMoved(true);
