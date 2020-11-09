@@ -52,13 +52,10 @@ std::string getNextMove(std::string position)
 
     int n = str.find("bestmove");
     std::cout << str << "\n";
-   // if (n != -1) ans = str.substr(n + 9, 4);
-    //n = position.find(ans);
-    //if (n != -1) return ans;
 
     n = str.find(" pv ");
     if (n != -1) {
-        ans = str.substr(n + 4, 4);
+        ans = str.substr(n + 4, 5);
         std::cout << std::endl << "ANS "<< ans << std::endl;
         return ans;
     }

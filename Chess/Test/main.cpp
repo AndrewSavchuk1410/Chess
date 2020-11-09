@@ -83,8 +83,8 @@ void updateFigurs(int x, int y, int newX, int newY) {
 
 PointInt findIntPoint(Vector2i pos) {
 	PointInt p;
-	p.x = int((pos.x - 40) / 100);
-	p.y = int((pos.y - 40) / 100);
+	p.x = int((pos.x - 20) / 100);
+	p.y = int((pos.y - 20) / 100);
 	return p;
 }
 
@@ -609,6 +609,7 @@ COMMANDS playGame(bool versusComputer = false) {
 			if (!victoryAchived) {
 				
 				std::string s = getNextMove(position); //get AI move
+				//std::string s = "a7a1k"; //get AI move
 				std::cout << "s: " << s << std::endl;
 			
 				oldPos2 = toCoord(s[0], s[1]);
@@ -650,13 +651,29 @@ COMMANDS playGame(bool versusComputer = false) {
 				}
 				else {
 					int pos2 = newPos2.x * 10 + newPos2.y; // compute new key for figure
-
+					
 					updateFigurs(oldPos2.x, oldPos2.y, newPos2.x, newPos2.y);
 					auto chosenFigure = figures.lower_bound(pos2);
 
 					chosenFigure->second->updateBoard(newPos2.x, newPos2.y);
 					chosenFigure->second->setPos();
 					chosenFigure->second->updateHasMoved(true);
+					if (s[4] == 'q') {
+						Queen BlackQueen(newPos2.x, newPos2.y, FIGURES::QUEEN, -1, QueenBlack);
+						figures[pos2] = std::make_shared<Queen>(BlackQueen);
+					}
+					else if (s[4] == 'b') {
+						Bishop BlackBishop(newPos2.x, newPos2.y, FIGURES::BISHOP, -1, BishopBlack);
+						figures[pos2] = std::make_shared<Bishop>(BlackBishop);
+					}
+					else if (s[4] == 'k') {
+						Knight BlackKnight(newPos2.x, newPos2.y, FIGURES::KNIGHT, -1, KnightBlack);
+						figures[pos2] = std::make_shared<Knight>(BlackKnight);
+					}
+					else if (s[4] == 'r') {
+						Rook BlackRook(newPos2.x, newPos2.y, FIGURES::ROOK, -1,RookBlack);
+						figures[pos2] = std::make_shared<Rook>(BlackRook);
+					}
 				}
 				position += (s + ' '); 
 				std::cout << position << '\n';
@@ -673,7 +690,6 @@ COMMANDS playGame(bool versusComputer = false) {
 
 		Vector2i pos = Mouse::getPosition(window) - Vector2i(offset);
 
-
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
@@ -682,6 +698,8 @@ COMMANDS playGame(bool versusComputer = false) {
 
 			if (event.type == Event::MouseButtonPressed)
 				if (event.key.code == Mouse::Left) {
+					//std::string s = getNextMove(position);
+					//std::cout << "YOUR BEST MOVE: " << s << "\n"; 
 					auto it = figures.begin();
 					for (int i = 0; i < figures.size(); i++) { // find out what figure choose player
 						if (it->second->getSprite().getGlobalBounds().contains(pos.x, pos.y))
@@ -765,7 +783,7 @@ COMMANDS playGame(bool versusComputer = false) {
 
 						if (f)
 						{
-
+							std::string promotionSymbol = "";
 							if (n->second->getFigureType() == FIGURES::KING && std::abs(oldPos2.x - p.x) > 1) {
 								if (team == 1) {
 									if (p.x == 6) {
@@ -845,33 +863,37 @@ COMMANDS playGame(bool versusComputer = false) {
 								}
 							}
 							else {
-								int pos = p.x * 10 + p.y;
+								int pos3 = p.x * 10 + p.y;
 								updateFigurs(n->second->getX(), n->second->getY(), p.x, p.y);
 
-								n = figures.lower_bound(pos);
+								n = figures.lower_bound(pos3);
 								n->second->updateBoard(p.x, p.y);
 								n->second->updateHasMoved(true);
 
 								n->second->setPos();
-								if (n->second->getFigureType() == FIGURES::PAWN && !versusComputer) {
+								if (n->second->getFigureType() == FIGURES::PAWN) {
 									int x = n->second->getX(), y = n->second->getY();
 									if (y == 0) {
 										FIGURES figure = Promotion(team);
 										if (figure == FIGURES::QUEEN) {
 											Queen newWhiteQueen(x, y, FIGURES::QUEEN, 1, QueenWhite);
-											figures[x*10 + y] = std::make_shared<Queen>(newWhiteQueen);
+											figures[x * 10 + y] = std::make_shared<Queen>(newWhiteQueen);
+											promotionSymbol = 'q';
 										}
 										else if (figure == FIGURES::BISHOP) {
 											Bishop newWhiteBishop(x, y, FIGURES::BISHOP, 1, BishopWhite);
 											figures[x * 10 + y] = std::make_shared<Bishop>(newWhiteBishop);
+											promotionSymbol = 'b';
 										}
 										else if (figure == FIGURES::KNIGHT) {
 											Knight newWhiteKnight(x, y, FIGURES::KNIGHT, 1, KnightWhite);
 											figures[x * 10 + y] = std::make_shared<Knight>(newWhiteKnight);
+											promotionSymbol = 'k';
 										}
 										else if (figure == FIGURES::ROOK) {
 											Rook newWhiteRook(x, y, FIGURES::ROOK, 1, RookWhite);
 											figures[x * 10 + y] = std::make_shared<Rook>(newWhiteRook);
+											promotionSymbol = 'r';
 										}
 									}
 									else if (y == 7) {
@@ -911,7 +933,7 @@ COMMANDS playGame(bool versusComputer = false) {
 							//add move to comutation string for AI
 							if (versusComputer)
 								position += (toChessNote(oldPos2.x, oldPos2.y)
-								+ toChessNote(n->second->getX(), n->second->getY()) + ' ');
+								+ toChessNote(p.x, p.y) + promotionSymbol + ' ');
 						}
 						else
 						{
